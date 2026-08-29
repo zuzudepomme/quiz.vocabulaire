@@ -327,6 +327,29 @@ function shuffle(arr) {
   return a;
 }
 
+// Retire les mentions d'étymologie ("du latin...", "(du grec ...)", etc.)
+// qui trahissent trop facilement le mot correspondant à la définition.
+function stripEtymology(text) {
+  if (!text) return text;
+  let cleaned = text;
+
+  // Segments entre parenthèses évoquant une origine/étymologie
+  cleaned = cleaned.replace(
+    /\(([^()]*\b(latin|grec|ancien français|vieux français|arabe|allemand|anglais|sanskrit|italien|espagnol|étymologie|étymol\.?)\b[^()]*)\)/gi,
+    ''
+  );
+
+  // Clause en tête de phrase du type "Du latin ..., " / "De l'ancien français ..., "
+  cleaned = cleaned.replace(
+    /^(du|de l['’]|issu du|issu de l['’]|vient du|vient de l['’])\s+(latin|grec|ancien français|vieux français|arabe|allemand|anglais|sanskrit|italien|espagnol)[^,.;]*[,.;]?\s*/i,
+    ''
+  );
+
+  cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
+  // Si le nettoyage a tout mangé, on retombe sur le texte d'origine
+  return cleaned.length > 3 ? cleaned : text;
+}
+
 sizeButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     sizeButtons.forEach(b => b.classList.remove('selected'));
@@ -369,8 +392,13 @@ document.getElementById('menu-btn').addEventListener('click', () => {
 function buildQuestions(size) {
   const chosen = shuffle(MOTS).slice(0, size);
   return chosen.map(entry => {
+    // On privilégie des distracteurs de longueur de définition proche,
+    // pour éviter qu'on repère la bonne réponse juste par son "style".
+    const targetLen = entry.definition.length;
     const others = MOTS.filter(m => m.mot !== entry.mot);
-    const distractors = shuffle(others).slice(0, 2);
+    const closeOthers = others.filter(m => Math.abs(m.definition.length - targetLen) <= 30);
+    const pool = closeOthers.length >= 2 ? closeOthers : others;
+    const distractors = shuffle(pool).slice(0, 2);
     const options = shuffle([entry, ...distractors]);
     const correctIndex = options.findIndex(o => o.mot === entry.mot);
     return { mot: entry.mot, citations: entry.citations || [], options, correctIndex };
@@ -398,7 +426,7 @@ function showQuestion() {
   q.options.forEach((opt, idx) => {
     const btn = document.createElement('button');
     btn.className = 'option';
-    btn.textContent = opt.definition;
+    btn.textContent = stripEtymology(opt.definition);
     btn.addEventListener('click', () => selectAnswer(idx));
     optionsDiv.appendChild(btn);
   });
@@ -448,7 +476,7 @@ function selectAnswer(idx) {
     citationsDiv.innerHTML += '<p style="margin-top:14px;"><strong>Les autres définitions proposées :</strong></p>' +
       others.map(opt => {
         const ex = shortest(opt.citations);
-        return `<p>${opt.mot} correspond à : ${opt.definition}` +
+        return `<p>${opt.mot} correspond à : ${stripEtymology(opt.definition)}` +
           (ex ? ` — « ${ex} »` : '') + `</p>`;
       }).join('');
   }
