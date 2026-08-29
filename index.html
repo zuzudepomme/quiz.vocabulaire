@@ -101,6 +101,41 @@
   .lb-empty { color: var(--muted); text-align: center; padding: 20px 0; }
 
   .pseudo-row { display: flex; gap: 10px; margin: 16px 0; }
+
+  .rare-word {
+    color: var(--orange-light);
+    font-weight: 600;
+    cursor: help;
+    border-bottom: 1px dotted var(--orange-light);
+  }
+  .rare-word:hover { color: var(--orange); }
+
+  .story-list-item {
+    display: block; width: 100%; text-align: left; background: #333; color: var(--text);
+    margin-bottom: 10px; padding: 14px 16px; border-radius: 8px;
+  }
+  .story-list-item:hover { background: #3f3f3f; }
+  .story-list-item .story-type {
+    display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 6px;
+    margin-left: 8px; color: #1e1e1e; font-weight: 700;
+  }
+  .story-type.coherent { background: var(--green); }
+  .story-type.loufoque { background: var(--orange); }
+
+  .story-text { line-height: 1.7; white-space: pre-wrap; }
+
+  .tooltip-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .tooltip-box {
+    background: var(--panel); border-left: 4px solid var(--orange);
+    border-radius: 10px; padding: 20px; max-width: 420px; margin: 16px;
+  }
+  .tooltip-box h3 { color: var(--orange-light); margin: 0 0 8px; }
+  .tooltip-box p { margin: 0; color: var(--text); line-height: 1.5; }
+  .tooltip-close { margin-top: 14px; }
 </style>
 </head>
 <body>
@@ -136,6 +171,27 @@
     </div>
     <button id="start-btn" class="btn-primary">Commencer</button>
     <button id="leaderboard-btn" class="btn-secondary">🏆 Leaderboard</button>
+    <button id="stories-btn" class="btn-secondary">📖 Petites histoires</button>
+  </div>
+
+  <!-- PETITES HISTOIRES : liste -->
+  <div id="stories-list-screen" class="panel hidden">
+    <div class="top-bar">
+      <button class="btn-menu" id="stories-back-btn">← Menu</button>
+      <span></span>
+    </div>
+    <p>Chaque mot en <span style="color:var(--orange-light); font-weight:600;">orange</span> a sa définition : clique dessus ou survole-le.</p>
+    <div id="stories-list"></div>
+  </div>
+
+  <!-- PETITES HISTOIRES : lecture -->
+  <div id="story-read-screen" class="panel hidden">
+    <div class="top-bar">
+      <button class="btn-menu" id="story-back-btn">← Histoires</button>
+      <span></span>
+    </div>
+    <h2 id="story-title" style="color:var(--orange-light); margin-top:0;"></h2>
+    <div class="story-text" id="story-text"></div>
   </div>
 
   <!-- LEADERBOARD -->
@@ -194,6 +250,10 @@ const menuScreen = document.getElementById('menu-screen');
 const leaderboardScreen = document.getElementById('leaderboard-screen');
 const quizScreen = document.getElementById('quiz-screen');
 const scoreScreen = document.getElementById('score-screen');
+const storiesListScreen = document.getElementById('stories-list-screen');
+const storyReadScreen = document.getElementById('story-read-screen');
+
+let HISTOIRES = [];
 
 const sizeButtons = document.querySelectorAll('.btn-choice[data-size]');
 const customRow = document.getElementById('custom-row');
@@ -208,7 +268,8 @@ let score = 0;
 let answered = false;
 
 function showOnly(screen) {
-  [loadingScreen, pseudoScreen, menuScreen, leaderboardScreen, quizScreen, scoreScreen]
+  [loadingScreen, pseudoScreen, menuScreen, leaderboardScreen, quizScreen, scoreScreen,
+   storiesListScreen, storyReadScreen]
     .forEach(s => s.classList.add('hidden'));
   screen.classList.remove('hidden');
 }
@@ -327,6 +388,79 @@ fetch('mots.json')
       "Impossible de charger mots.json (" + err.message + "). " +
       "Génère-le avec build_data.py puis recharge la page.";
   });
+
+fetch('histoires.json')
+  .then(r => r.ok ? r.json() : [])
+  .then(data => { HISTOIRES = data || []; })
+  .catch(() => { HISTOIRES = []; });
+
+// ------------------ Petites histoires ------------------
+
+function motDefinition(mot) {
+  const entry = MOTS.find(m => m.mot.toLowerCase() === mot.toLowerCase());
+  return entry ? entry.definition : null;
+}
+
+function renderStoryText(texte) {
+  return texte.replace(/\{\{([^|}]+)(?:\|([^}]+))?\}\}/g, (match, mot, display) => {
+    const shown = display || mot;
+    const safeMot = mot.trim().replace(/"/g, '&quot;');
+    return `<span class="rare-word" data-mot="${safeMot}">${shown}</span>`;
+  });
+}
+
+function renderStoriesList() {
+  const listDiv = document.getElementById('stories-list');
+  if (!HISTOIRES.length) {
+    listDiv.innerHTML = '<p class="lb-empty">Aucune histoire disponible pour le moment.</p>';
+    return;
+  }
+  listDiv.innerHTML = HISTOIRES.map((h, i) => `
+    <button class="story-list-item" data-story-index="${i}">
+      ${escapeHtml(h.titre)}
+      <span class="story-type ${h.type}">${h.type === 'coherent' ? 'Cohérente' : 'Loufoque'}</span>
+    </button>
+  `).join('');
+  listDiv.querySelectorAll('.story-list-item').forEach(btn => {
+    btn.addEventListener('click', () => openStory(parseInt(btn.dataset.storyIndex, 10)));
+  });
+}
+
+function openStory(index) {
+  const h = HISTOIRES[index];
+  document.getElementById('story-title').textContent = h.titre;
+  document.getElementById('story-text').innerHTML = renderStoryText(h.texte);
+  showOnly(storyReadScreen);
+
+  document.querySelectorAll('#story-text .rare-word').forEach(span => {
+    span.addEventListener('click', () => showDefinitionPopup(span.dataset.mot));
+    span.title = 'Cliquer pour voir la définition';
+  });
+}
+
+function showDefinitionPopup(mot) {
+  const def = motDefinition(mot);
+  const overlay = document.createElement('div');
+  overlay.className = 'tooltip-overlay';
+  overlay.innerHTML = `
+    <div class="tooltip-box">
+      <h3>${escapeHtml(mot)}</h3>
+      <p>${def ? escapeHtml(def) : "Définition non trouvée."}</p>
+      <button class="btn-primary tooltip-close">Fermer</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  const close = () => overlay.remove();
+  overlay.querySelector('.tooltip-close').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+}
+
+document.getElementById('stories-btn').addEventListener('click', () => {
+  renderStoriesList();
+  showOnly(storiesListScreen);
+});
+document.getElementById('stories-back-btn').addEventListener('click', () => showOnly(menuScreen));
+document.getElementById('story-back-btn').addEventListener('click', () => showOnly(storiesListScreen));
 
 // ------------------ Menu / sélection taille ------------------
 
