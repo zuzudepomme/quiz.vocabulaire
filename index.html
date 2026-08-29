@@ -265,6 +265,20 @@ function selectAnswer(idx) {
     citationsDiv.innerHTML = '<p>(Aucun exemple d\'usage disponible.)</p>';
   }
 
+  const others = q.options.filter((opt, i) => i !== q.correctIndex);
+  if (others.length > 0) {
+    const shortest = (list) => {
+      if (!list || list.length === 0) return null;
+      return list.reduce((a, b) => (b.length < a.length ? b : a));
+    };
+    citationsDiv.innerHTML += '<p style="margin-top:14px;"><strong>Les autres définitions proposées :</strong></p>' +
+      others.map(opt => {
+        const ex = shortest(opt.citations);
+        return `<p>${opt.mot} correspond à : ${opt.definition}` +
+          (ex ? ` — « ${ex} »` : '') + `</p>`;
+      }).join('');
+  }
+
   document.getElementById('progress').textContent =
     `Mot ${currentIndex + 1}/${questions.length} — Score : ${score}`;
 
