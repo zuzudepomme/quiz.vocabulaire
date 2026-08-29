@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quiz de mots rares</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --bg: #1e1e1e;
@@ -177,7 +178,10 @@
 let MOTS = [];
 
 const PSEUDO_KEY = 'quiz_mots_rares_pseudo';
-const LEADERBOARD_KEY = 'quiz_mots_rares_leaderboard';
+
+const SUPABASE_URL = 'https://chpwwdxrcdzcibkhencn.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_MJSJ362OpDVbeKoeVbE2kQ_3oaBSu1D';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const loadingScreen = document.getElementById('loading-screen');
 const pseudoScreen = document.getElementById('pseudo-screen');
@@ -224,45 +228,46 @@ document.getElementById('pseudo-input').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('pseudo-btn').click();
 });
 
-// ------------------ Leaderboard ------------------
+// ------------------ Leaderboard (Supabase, partagé entre tous les joueurs) ------------------
 
-function getLeaderboard() {
-  try {
-    return JSON.parse(localStorage.getItem(LEADERBOARD_KEY)) || [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function saveResult(size, scoreVal, total) {
-  const board = getLeaderboard();
-  board.push({
+async function saveResult(size, scoreVal, total) {
+  const pct = Math.round((scoreVal / total) * 100);
+  const { error } = await supabaseClient.from('leaderboard').insert({
     pseudo: getPseudo() || 'Anonyme',
-    size: size,
+    taille: size,
     score: scoreVal,
     total: total,
-    pct: Math.round((scoreVal / total) * 100),
-    date: new Date().toISOString(),
+    pct: pct,
   });
-  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board));
+  if (error) console.error('Erreur enregistrement leaderboard :', error);
 }
 
-function renderLeaderboard(size) {
+async function renderLeaderboard(size) {
   document.querySelectorAll('.lb-tab').forEach(b => {
     b.classList.toggle('selected', parseInt(b.dataset.lbSize, 10) === size);
   });
   const list = document.getElementById('lb-list');
-  const entries = getLeaderboard()
-    .filter(e => e.size === size)
-    .sort((a, b) => b.pct - a.pct || new Date(a.date) - new Date(b.date))
-    .slice(0, 20);
+  list.innerHTML = '<li class="lb-empty">Chargement...</li>';
 
-  if (entries.length === 0) {
+  const { data, error } = await supabaseClient
+    .from('leaderboard')
+    .select('*')
+    .eq('taille', size)
+    .order('pct', { ascending: false })
+    .order('created_at', { ascending: true })
+    .limit(20);
+
+  if (error) {
+    list.innerHTML = '<li class="lb-empty">Impossible de charger le leaderboard (' + error.message + ').</li>';
+    return;
+  }
+
+  if (!data || data.length === 0) {
     list.innerHTML = '<li class="lb-empty">Aucun score enregistré pour cette catégorie pour l\\'instant.</li>';
     return;
   }
 
-  list.innerHTML = entries.map((e, i) => `
+  list.innerHTML = data.map((e, i) => `
     <li>
       <span class="lb-rank">${i + 1}.</span>
       <span class="lb-pseudo">${escapeHtml(e.pseudo)}</span>
@@ -475,9 +480,9 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-function showScore() {
+async function showScore() {
   if ([25, 50, 100].includes(currentSessionSize)) {
-    saveResult(currentSessionSize, score, questions.length);
+    await saveResult(currentSessionSize, score, questions.length);
   }
   showOnly(scoreScreen);
   const pct = Math.round((score / questions.length) * 100);
