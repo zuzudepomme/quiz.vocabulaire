@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz de mots rares</title>
+<style>
+  :root {
+    --bg: #1e1e1e;
+    --panel: #2a2a2a;
+    --orange: #e8862a;
+    --orange-light: #f4a94f;
+    --text: #e6e6e6;
+    --muted: #9a9a9a;
+    --green: #3ecf6a;
+    --red: #e2544b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+    margin: 0;
+  }
+  .app { width: 100%; max-width: 640px; }
+  h1 { color: var(--orange); text-align: center; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: var(--muted); margin-bottom: 32px; }
+  .panel { background: var(--panel); border-radius: 12px; padding: 28px; border-left: 4px solid var(--orange); }
+  .hidden { display: none !important; }
+
+  .size-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  button {
+    font-family: inherit; font-size: 16px; cursor: pointer;
+    border: none; border-radius: 8px; padding: 14px;
+    transition: transform 0.08s ease, background 0.15s ease;
+  }
+  button:active { transform: scale(0.97); }
+  .btn-choice { background: #3a3a3a; color: var(--text); }
+  .btn-choice:hover { background: #474747; }
+  .btn-choice.selected { outline: 2px solid var(--orange); }
+
+  .btn-primary { background: var(--orange); color: #1e1e1e; font-weight: 600; width: 100%; margin-top: 8px; }
+  .btn-primary:hover { background: var(--orange-light); }
+  .btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+  .custom-row { display: flex; gap: 10px; margin-top: 8px; }
+  .custom-row input {
+    flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444;
+    background: #1e1e1e; color: var(--text); font-size: 15px;
+  }
+
+  .progress { color: var(--muted); margin-bottom: 8px; font-size: 14px; }
+  .word { font-size: 28px; font-weight: 700; color: var(--orange-light); margin-bottom: 20px; }
+  .option {
+    display: block; width: 100%; text-align: left; background: #333; color: var(--text);
+    margin-bottom: 12px; padding: 14px 16px; border-radius: 8px; line-height: 1.4;
+  }
+  .option:hover { background: #3f3f3f; }
+  .option.correct { background: #234d31; outline: 2px solid var(--green); }
+  .option.wrong { background: #4d2723; outline: 2px solid var(--red); }
+  .option:disabled { cursor: default; }
+
+  .feedback { margin-top: 18px; padding: 14px 16px; border-radius: 8px; font-weight: 600; }
+  .feedback.correct { background: #1e3d29; color: var(--green); }
+  .feedback.wrong { background: #402420; color: var(--red); }
+
+  .citations { margin-top: 16px; color: var(--muted); font-style: italic; font-size: 14px; line-height: 1.5; }
+  .citations p { margin: 6px 0; }
+
+  .next-hint { margin-top: 20px; text-align: center; color: var(--muted); font-size: 14px; cursor: pointer; }
+
+  .score-big { font-size: 40px; color: var(--orange); text-align: center; font-weight: 700; margin: 12px 0 6px; }
+  .score-sub { text-align: center; color: var(--muted); margin-bottom: 24px; }
+
+  .status { text-align: center; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>Quiz de mots rares</h1>
+  <div class="subtitle">D'après le dictionnaire du français difficile de webnext.fr</div>
+
+  <!-- CHARGEMENT -->
+  <div id="loading-screen" class="panel">
+    <p class="status" id="loading-status">Chargement des mots...</p>
+  </div>
+
+  <!-- MENU -->
+  <div id="menu-screen" class="panel hidden">
+    <p>Combien de mots veux-tu dans ta session ?</p>
+    <div class="size-options">
+      <button class="btn-choice" data-size="25">25 mots</button>
+      <button class="btn-choice" data-size="50">50 mots</button>
+      <button class="btn-choice" data-size="100">100 mots</button>
+      <button class="btn-choice" data-size="custom">Personnalisé</button>
+    </div>
+    <div id="custom-row" class="custom-row hidden">
+      <input id="custom-input" type="number" min="1" placeholder="Nombre de mots">
+    </div>
+    <button id="start-btn" class="btn-primary">Commencer</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz-screen" class="panel hidden">
+    <div class="progress" id="progress"></div>
+    <div class="word" id="word"></div>
+    <div id="options"></div>
+    <div id="feedback" class="feedback hidden"></div>
+    <div id="citations" class="citations"></div>
+    <div class="next-hint" id="next-hint"></div>
+  </div>
+
+  <!-- SCORE -->
+  <div id="score-screen" class="panel hidden">
+    <div class="score-big" id="score-big"></div>
+    <div class="score-sub" id="score-sub"></div>
+    <button id="menu-btn" class="btn-primary">Retour au menu principal</button>
+  </div>
+</div>
+
+<script>
+let MOTS = [];
+
+const loadingScreen = document.getElementById('loading-screen');
+const menuScreen = document.getElementById('menu-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const scoreScreen = document.getElementById('score-screen');
+
+const sizeButtons = document.querySelectorAll('.btn-choice');
+const customRow = document.getElementById('custom-row');
+const customInput = document.getElementById('custom-input');
+const startBtn = document.getElementById('start-btn');
+
+let selectedSize = 25;
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+
+fetch('mots.json')
+  .then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(data => {
+    MOTS = data;
+    if (!MOTS.length) throw new Error('Fichier mots.json vide');
+    loadingScreen.classList.add('hidden');
+    menuScreen.classList.remove('hidden');
+    sizeButtons[0].classList.add('selected');
+  })
+  .catch(err => {
+    document.getElementById('loading-status').textContent =
+      "Impossible de charger mots.json (" + err.message + "). " +
+      "Génère-le avec build_data.py puis recharge la page.";
+  });
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+sizeButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    sizeButtons.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    if (btn.dataset.size === 'custom') {
+      customRow.classList.remove('hidden');
+      selectedSize = null;
+    } else {
+      customRow.classList.add('hidden');
+      selectedSize = parseInt(btn.dataset.size, 10);
+    }
+  });
+});
+
+startBtn.addEventListener('click', () => {
+  let size = selectedSize;
+  if (size === null) {
+    size = parseInt(customInput.value, 10);
+    if (!size || size < 1) { customInput.focus(); return; }
+  }
+  size = Math.min(size, MOTS.length);
+  startQuiz(size);
+});
+
+function buildQuestions(size) {
+  const chosen = shuffle(MOTS).slice(0, size);
+  return chosen.map(entry => {
+    const others = MOTS.filter(m => m.mot !== entry.mot);
+    const distractors = shuffle(others).slice(0, 2);
+    const options = shuffle([entry, ...distractors]);
+    const correctIndex = options.findIndex(o => o.mot === entry.mot);
+    return { mot: entry.mot, citations: entry.citations || [], options, correctIndex };
+  });
+}
+
+function startQuiz(size) {
+  questions = buildQuestions(size);
+  currentIndex = 0;
+  score = 0;
+  menuScreen.classList.add('hidden');
+  scoreScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+  const q = questions[currentIndex];
+  document.getElementById('progress').textContent =
+    `Mot ${currentIndex + 1}/${questions.length} — Score : ${score}`;
+  document.getElementById('word').textContent = q.mot;
+
+  const optionsDiv = document.getElementById('options');
+  optionsDiv.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = opt.definition;
+    btn.addEventListener('click', () => selectAnswer(idx));
+    optionsDiv.appendChild(btn);
+  });
+
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('citations').innerHTML = '';
+  document.getElementById('next-hint').textContent = '';
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = questions[currentIndex];
+  const optionButtons = document.querySelectorAll('#options .option');
+  optionButtons.forEach(b => b.disabled = true);
+
+  optionButtons[q.correctIndex].classList.add('correct');
+  const feedback = document.getElementById('feedback');
+  feedback.classList.remove('hidden');
+
+  if (idx === q.correctIndex) {
+    score++;
+    feedback.classList.add('correct');
+    feedback.classList.remove('wrong');
+    feedback.textContent = '✅ Bonne réponse !';
+  } else {
+    optionButtons[idx].classList.add('wrong');
+    feedback.classList.add('wrong');
+    feedback.classList.remove('correct');
+    feedback.textContent = '❌ Faux.';
+  }
+
+  const citationsDiv = document.getElementById('citations');
+  if (q.citations.length > 0) {
+    citationsDiv.innerHTML = '<p><strong>Exemples d\'usage :</strong></p>' +
+      q.citations.map(c => `<p>« ${c} »</p>`).join('');
+  } else {
+    citationsDiv.innerHTML = '<p>(Aucun exemple d\'usage disponible.)</p>';
+  }
+
+  document.getElementById('progress').textContent =
+    `Mot ${currentIndex + 1}/${questions.length} — Score : ${score}`;
+
+  const hint = document.getElementById('next-hint');
+  hint.textContent = currentIndex < questions.length - 1
+    ? 'Appuie sur ESPACE (ou clique) pour passer au mot suivant →'
+    : 'Appuie sur ESPACE pour voir ton score final';
+  hint.onclick = nextQuestion;
+}
+
+function nextQuestion() {
+  if (!answered) return;
+  currentIndex++;
+  if (currentIndex < questions.length) {
+    showQuestion();
+  } else {
+    showScore();
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && !quizScreen.classList.contains('hidden')) {
+    e.preventDefault();
+    nextQuestion();
+  }
+});
+
+function showScore() {
+  quizScreen.classList.add('hidden');
+  scoreScreen.classList.remove('hidden');
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('score-big').textContent = `${score}/${questions.length}`;
+  document.getElementById('score-sub').textContent = `${pct}% de bonnes réponses`;
+}
+
+document.getElementById('menu-btn').addEventListener('click', () => {
+  scoreScreen.classList.add('hidden');
+  menuScreen.classList.remove('hidden');
+  sizeButtons.forEach(b => b.classList.remove('selected'));
+  customRow.classList.add('hidden');
+  customInput.value = '';
+  selectedSize = 25;
+  sizeButtons[0].classList.add('selected');
+});
+</script>
+</body>
+</html>
