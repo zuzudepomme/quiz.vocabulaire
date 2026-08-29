@@ -185,6 +185,10 @@
       <span></span>
     </div>
     <p>Chaque mot en <span style="color:var(--orange-light); font-weight:600;">orange</span> a sa définition : clique dessus ou survole-le.</p>
+    <div class="lb-tabs">
+      <button class="btn-choice story-filter-tab selected" data-filter="coherent">Cohérentes</button>
+      <button class="btn-choice story-filter-tab" data-filter="loufoque">Loufoques</button>
+    </div>
     <div id="stories-list"></div>
   </div>
 
@@ -413,13 +417,19 @@ function renderStoryText(texte) {
   });
 }
 
+let currentStoryFilter = 'coherent';
+
 function renderStoriesList() {
   const listDiv = document.getElementById('stories-list');
-  if (!HISTOIRES.length) {
+  const filtered = HISTOIRES
+    .map((h, i) => ({ h, i }))
+    .filter(({ h }) => h.type === currentStoryFilter);
+
+  if (!filtered.length) {
     listDiv.innerHTML = '<p class="lb-empty">Aucune histoire disponible pour le moment.</p>';
     return;
   }
-  listDiv.innerHTML = HISTOIRES.map((h, i) => `
+  listDiv.innerHTML = filtered.map(({ h, i }) => `
     <button class="story-list-item" data-story-index="${i}">
       ${escapeHtml(h.titre)}
       <span class="story-type ${h.type}">${h.type === 'coherent' ? 'Cohérente' : 'Loufoque'}</span>
@@ -429,6 +439,15 @@ function renderStoriesList() {
     btn.addEventListener('click', () => openStory(parseInt(btn.dataset.storyIndex, 10)));
   });
 }
+
+document.querySelectorAll('.story-filter-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.story-filter-tab').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    currentStoryFilter = btn.dataset.filter;
+    renderStoriesList();
+  });
+});
 
 function openStory(index) {
   const h = HISTOIRES[index];
