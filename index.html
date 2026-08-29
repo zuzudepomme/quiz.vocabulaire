@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quiz de mots rares</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root {
     --bg: #1e1e1e;
@@ -181,7 +181,12 @@ const PSEUDO_KEY = 'quiz_mots_rares_pseudo';
 
 const SUPABASE_URL = 'https://chpwwdxrcdzcibkhencn.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_MJSJ362OpDVbeKoeVbE2kQ_3oaBSu1D';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabaseClient = null;
+try {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch (e) {
+  console.error('Supabase indisponible, le leaderboard sera désactivé :', e);
+}
 
 const loadingScreen = document.getElementById('loading-screen');
 const pseudoScreen = document.getElementById('pseudo-screen');
@@ -231,6 +236,7 @@ document.getElementById('pseudo-input').addEventListener('keydown', (e) => {
 // ------------------ Leaderboard (Supabase, partagé entre tous les joueurs) ------------------
 
 async function saveResult(size, scoreVal, total) {
+  if (!supabaseClient) return;
   const pct = Math.round((scoreVal / total) * 100);
   const { error } = await supabaseClient.from('leaderboard').insert({
     pseudo: getPseudo() || 'Anonyme',
@@ -247,6 +253,12 @@ async function renderLeaderboard(size) {
     b.classList.toggle('selected', parseInt(b.dataset.lbSize, 10) === size);
   });
   const list = document.getElementById('lb-list');
+
+  if (!supabaseClient) {
+    list.innerHTML = '<li class="lb-empty">Leaderboard indisponible pour le moment.</li>';
+    return;
+  }
+
   list.innerHTML = '<li class="lb-empty">Chargement...</li>';
 
   const { data, error } = await supabaseClient
