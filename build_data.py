@@ -54,6 +54,17 @@ def clean_definition(word: str, raw_text: str) -> str:
     if main_part.lower().startswith(word.lower()):
         main_part = main_part[len(word):].strip()
         main_part = main_part.lstrip(":-— ").strip()
+
+    # Retire une éventuelle étymologie/marque de domaine entre crochets en tête
+    # (ex: "[du lat. marcescere, ...]" ou "[théol.]") pour ne garder que la
+    # vraie définition qui suit. Si le crochet n'est jamais fermé (texte
+    # tronqué avant la fermeture), on retire simplement ce fragment inutile.
+    m = re.match(r"^\[[^\]]*\]\s*(.+)$", main_part)
+    if m and len(m.group(1)) > 5:
+        main_part = m.group(1).strip()
+    elif main_part.startswith("[") and "]" not in main_part:
+        main_part = ""  # sera géré par le fallback sur les citations plus bas
+
     return main_part
 
 
@@ -74,6 +85,10 @@ def parse_page(html: str):
         raw = extract_block_text(h2)
         definition = clean_definition(word, raw)
         citations = extract_citations(raw)
+        # Fallback : si le crochet d'étymologie n'était jamais fermé, la vraie
+        # définition a été récupérée par erreur comme première citation.
+        if not definition and citations:
+            definition = citations.pop(0)
         if word and definition and len(definition) > 5:
             entries.append({"mot": word, "definition": definition, "citations": citations, "url": url})
     return entries

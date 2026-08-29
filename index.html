@@ -236,6 +236,10 @@
     <div class="score-sub" id="score-sub"></div>
     <button id="menu-btn" class="btn-primary">Retour au menu principal</button>
   </div>
+
+  <div style="text-align:center; color:var(--muted); font-size:12px; margin-top:24px;">
+    Malheureusement je suis trop con pour faire des histoires alors elles sont toutes générées par IA.
+  </div>
 </div>
 
 <script>
@@ -472,7 +476,7 @@ document.body.appendChild(wordTooltip);
 function showWordTooltip(el) {
   const mot = el.dataset.mot;
   const def = motDefinition(mot);
-  wordTooltip.innerHTML = `<strong>${escapeHtml(mot)}</strong>${def ? escapeHtml(def) : 'Définition non trouvée.'}`;
+  wordTooltip.innerHTML = `<strong>${escapeHtml(mot)}</strong>${def ? escapeHtml(stripEtymology(def)) : 'Définition non trouvée.'}`;
   wordTooltip.classList.remove('hidden');
 
   const rect = el.getBoundingClientRect();
@@ -519,6 +523,9 @@ function shuffle(arr) {
 function stripEtymology(text) {
   if (!text) return text;
   let cleaned = text;
+
+  // Crochets d'étymologie ou de marque de domaine en tête ("[du lat. ...]", "[théol.]")
+  cleaned = cleaned.replace(/^\[[^\]]*\]\s*/, '');
 
   // Segments entre parenthèses évoquant une origine/étymologie
   cleaned = cleaned.replace(

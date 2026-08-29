@@ -240,5 +240,100 @@
       "imbelle",
       "zain"
     ]
+  },
+  {
+    "titre": "Le maître d'échecs",
+    "type": "coherent",
+    "texte": "Le vieux maître d'échecs recevait chaque samedi un nouvel élève dans son arrière-boutique transformée en salle de jeu. Il ne parlait jamais beaucoup, préférant laisser ses silences faire le travail, avec une {{célérité}} d'esprit qui contrastait avec sa lenteur apparente.\n\nCe jour-là, un adolescent {{fruste}} dans ses manières, mais visiblement doué, s'installa face à lui. Le garçon jouait vite, presque avec {{alacrité}}, enchaînant les coups sans grande réflexion, sûr de son talent naturel.\n\nLe maître, lui, avançait ses pièces avec une lenteur austère, observant chaque réaction de son adversaire. Il laissa volontairement le garçon prendre l'avantage matériel, sachant que cette confiance excessive finirait par se retourner contre lui.\n\nAu bout d'une heure, la partie bascula. Le garçon, pantois devant un piège qu'il n'avait absolument pas vu venir, perdit sa reine en quelques coups. Il resta un moment silencieux, cherchant visiblement à comprendre où son raisonnement avait failli.\n\nLe maître, sans {{jactance}} ni sourire moqueur, lui expliqua calmement son erreur : il avait négligé une case, apparemment sans importance, qui avait pourtant tout changé. Le garçon, loin de se vexer, redemanda immédiatement une revanche.\n\nAu fil des semaines, l'adolescent perdit son assurance bravache du début pour développer une véritable clairvoyance tactique. Le maître, satisfait sans jamais le montrer ouvertement, continuait de le battre régulièrement — mais de moins en moins facilement.\n\nUn an plus tard, le garçon remporta enfin sa première partie contre lui. Le maître se contenta de hocher la tête, avec cette même sobriété qui l'avait toujours caractérisé, avant de remettre calmement les pièces en place pour une nouvelle partie.",
+    "mots": [
+      "célérité",
+      "fruste",
+      "alacrité",
+      "jactance"
+    ]
+  },
+  {
+    "titre": "La lettre jamais envoyée",
+    "type": "coherent",
+    "texte": "Depuis la mort de sa grand-mère, Léa avait hérité d'une vieille boîte en fer contenant des lettres jaunies, jamais postées. Certaines dataient de plusieurs décennies, écrites d'une écriture cursive et serrée, difficile à déchiffrer.\n\nLa première lettre qu'elle parvint à lire racontait une {{avanie}} subie par sa grand-mère dans sa jeunesse, un incident humiliant qu'elle n'avait apparemment jamais osé raconter à quiconque. Léa comprit alors pourquoi certains sujets restaient toujours tus en famille, sans qu'on sache vraiment pourquoi.\n\nD'autres lettres, plus légères, décrivaient des scènes de vie quotidienne avec une bonhomie touchante : un voisin gouailleur qui faisait rire tout le quartier, une cavalcade d'enfants dans la cour de l'immeuble, un été particulièrement {{capiteux|enivrant}} passé à la campagne.\n\nLéa passa plusieurs soirées, un vieux {{bestiaire}} illustré ouvert à côté d'elle par simple nostalgie, à trier ces fragments d'une vie qu'elle n'avait connue qu'à travers le prisme de la vieillesse. Sa grand-mère, dans ces pages, apparaissait tour à tour crédule, amoureuse, en colère — bien loin de l'image un peu fanée qu'elle avait fini par lui donner ces dernières années.\n\nUne dernière lettre, plus courte que les autres, était adressée à un certain Marcel, jamais mentionné par la famille. Léa n'y trouva aucune explication précise, seulement quelques mots tendres et un regret discret de ne jamais l'avoir envoyée.\n\nElle referma la boîte sans chercher davantage à percer ce mystère, respectant ce silence que sa grand-mère avait visiblement choisi de garder toute sa vie. Certaines histoires, se dit-elle, n'ont peut-être pas besoin d'être résolues pour être honorées.",
+    "mots": [
+      "avanie",
+      "capiteux",
+      "bestiaire"
+    ]
+  },
+  {
+    "titre": "Le stagiaire trop zélé",
+    "type": "coherent",
+    "texte": "Thomas venait de commencer son stage dans le service juridique, et son enthousiasme, presque {{concupiscence|dévorant}}, inquiétait déjà ses collègues plus expérimentés. Il arrivait le premier chaque matin, reparta it le dernier, et posait des questions avec une assiduité qui frisait parfois l'excès.\n\nSa responsable, une femme prudente et peu bavarde, lui avait pourtant conseillé dès le premier jour de ralentir, de prendre le temps d'observer avant d'agir. Thomas, candide et pressé de faire ses preuves, n'en tint pas vraiment compte.\n\nUn matin, il se retrouva à devoir rédiger seul une note pour un client important, sans avoir vérifié certains points avec l'équipe. Le document, plein de bonnes intentions mais truffé d'approximations, faillit provoquer un véritable incident avec le client, qui n'apprécia pas du tout le ton un peu trop {{captieux|approximatif}} de certaines formulations.\n\nSa responsable dut intervenir en urgence pour corriger le tir, sans jamais {{agonir}} Thomas de reproches comme elle aurait pu le faire. Elle préféra simplement lui montrer, point par point, où le raisonnement avait dérapé.\n\nThomas, loin de se décourager, comprit enfin la leçon : la rapidité ne remplaçait jamais la rigueur. Il devint, dans les semaines qui suivirent, beaucoup plus proche de ses collègues, apprenant à leur contact la patience qui lui manquait.\n\nÀ la fin de son stage, sa responsable reconnut volontiers qu'il avait fait d'énormes progrès, sans jamais renier son énergie initiale — simplement mieux canalisée. Thomas, lui, garda de cette expérience une leçon qu'il n'oublierait jamais : bien faire prend toujours plus de temps que bien vouloir.",
+    "mots": [
+      "concupiscence",
+      "captieux",
+      "agonir"
+    ]
+  },
+  {
+    "titre": "Le potier du village",
+    "type": "coherent",
+    "texte": "Dans son atelier au toit de {{chaume}}, au bord de la rivière, le vieux {{façonnier}} travaillait l'argile avec des gestes acquis après des décennies de pratique. Chaque matin, une {{aronde}} venait nicher sous l'avancée du toit, sans jamais sembler dérangée par le bruit du tour.\n\nUn jour, alors que les hirondelles s'{{égailler|égaillaient}} dans le ciel du matin, un jeune apprenti maladroit arriva à l'atelier, envoyé par sa famille qui espérait qu'il y trouve enfin une vocation. Le garçon, désinvolte au début, se montrait plus intéressé par son téléphone que par le tour de potier.\n\nLe vieil homme ne le brusqua jamais. Il le laissa observer, jour après jour, sans lui imposer quoi que ce soit — une sorte de patience presque inébranlable. Il savait, par expérience, que l'envie d'apprendre ne se forçait jamais.\n\nUn après-midi, alors qu'il pétrissait une motte d'argile particulièrement collante, le garçon, presque malgré lui, s'approcha et demanda à essayer. Ses premiers essais furent informes, ratés, franchement décevants — mais il insista, jour après jour, sans jamais se décourager totalement.\n\nAu bout de plusieurs mois, il réussit enfin son premier bol correctement centré. Le potier, sans grande démonstration, se contenta de hocher la tête avec un sourire discret, preuve suffisante à ses yeux que le déclic tant attendu avait enfin eu lieu.\n\nLe garçon continua de venir, semaine après semaine, découvrant peu à peu ce plaisir simple de transformer une matière brute en objet fini. Il ne devint jamais un grand artiste, mais garda toute sa vie ce goût pour le travail manuel, patiemment transmis par un vieil homme qui n'avait jamais cherché à convaincre personne.",
+    "mots": [
+      "chaume",
+      "façonnier",
+      "aronde",
+      "égailler"
+    ]
+  },
+  {
+    "titre": "L'inspecteur récalcitrant",
+    "type": "coherent",
+    "texte": "L'inspecteur Delmas avait la réputation d'être difficile avec sa hiérarchie, refusant systématiquement de clore une affaire tant qu'un détail lui semblait {{sibyllin}}. Ses collègues le trouvaient parfois épuisant, mais respectaient sa {{prescience}} presque dérangeante, rarement prise en défaut.\n\nCette fois, l'affaire semblait pourtant simple : un cambriolage sans grande conséquence, dossier que tout le monde voulait classer rapidement. Delmas, lui, restait bloqué sur un détail contradictoire — un carreau brisé de l'extérieur, alors que tout indiquait une entrée par une porte laissée ouverte.\n\nSon supérieur, exaspéré par cette hésitation qui retardait la clôture du dossier, lui reprocha ouvertement de perdre du temps sur une affaire mineure. Delmas, sans se départir de son calme habituel, continua discrètement son enquête sur son temps libre.\n\nIl finit par découvrir que le véritable cambrioleur avait maquillé son entrée pour faire porter les soupçons sur un rôdeur du quartier, alors qu'il s'agissait en réalité d'un proche de la victime, motivé par un vieux conflit familial resté longtemps {{arcane|secret}}.\n\nLorsqu'il présenta ses conclusions, son supérieur, pantois, dut reconnaître que l'instinct de Delmas avait encore vu juste. L'affaire, loin d'être mineure, révélait une histoire familiale bien plus sombre que prévu.\n\nDelmas ne tira aucune fierté particulière de cette victoire. Il rangea simplement son dossier, convaincu, une fois de plus, que les détails qui dérangent sont souvent ceux qui méritent le plus d'attention.",
+    "mots": [
+      "sibyllin",
+      "prescience",
+      "arcane"
+    ]
+  },
+  {
+    "titre": "Le roi qui détestait les compliments",
+    "type": "loufoque",
+    "texte": "Le roi Ferdinand III régnait sur un royaume prospère, mais souffrait d'une allergie bien particulière : le moindre compliment lui donnait de l'urticaire. Ses conseillers, habitués à la jactance habituelle des cours royales, avaient dû complètement revoir leur vocabulaire de flatterie.\n\nÀ chaque audience, un {{hâbleur}} de passage tentait immanquablement de vanter la sagesse ou la beauté du souverain, provoquant systématiquement une éruption cutanée royale du plus bel effet dramatique. Le royaume avait fini par instaurer une loi stricte interdisant tout compliment adressé au trône, sous peine d'amende.\n\nUn ambassadeur étranger, {{obséquieux}} par habitude diplomatique, faillit provoquer un incident international en félicitant chaleureusement le roi pour son « magnifique manteau d'hermine ». Le roi, {{languide}} de démangeaisons pendant trois jours entiers, faillit déclarer la guerre pour l'occasion, avant que ses conseillers ne le convainquent que ce serait disproportionné.\n\nLes médecins royaux, {{ubuesque|dépassés par l'absurdité de la situation}}, avaient fini par recommander une méthode radicale : n'adresser au roi que des critiques, aussi mineures soient-elles, pour éviter tout risque allergique. Le royaume devint ainsi, sans le vouloir, le seul endroit où l'on ne pouvait légalement dire du bien de son souverain.\n\nParadoxalement, cette situation rendit le roi immensément populaire : le peuple, habitué à ne l'entendre critiquer que sur des vétilles absurdes comme la forme de son nez ou sa manière de tenir sa fourchette, en vint à le trouver {{truculent}} et attachant, bien plus humain que ses prédécesseurs distants.\n\nFerdinand III mourut, dit-on, parfaitement heureux, entouré uniquement de gens qui ne lui avaient jamais fait le moindre compliment de toute sa vie — la plus grande preuve d'affection qu'il ait jamais pu recevoir.",
+    "mots": [
+      "hâbleur",
+      "obséquieux",
+      "languide",
+      "ubuesque",
+      "truculent"
+    ]
+  },
+  {
+    "titre": "L'académie des excuses improbables",
+    "type": "loufoque",
+    "texte": "Dans une petite ville reculée existait une institution unique au monde : l'Académie des Excuses Improbables, où l'on enseignait sérieusement l'art de justifier ses retards avec un maximum de panache et un minimum de vraisemblance.\n\nLe professeur en chef, un homme au regard {{torve}} et à l'élocution étonnamment convaincante, expliquait à ses élèves qu'une bonne excuse ne devait jamais être crédible, mais suffisamment cocasse pour désarmer toute colère légitime. « Ne dites jamais que votre réveil n'a pas sonné, disait-il, dites qu'un cénotaphe s'est effondré sur votre chemin. »\n\nUn élève particulièrement doué, surnommé le cabotin de la promotion, présenta un jour l'excuse la plus élaborée jamais entendue dans l'établissement : une histoire impliquant un chalut de pêche égaré sur l'autoroute, trois pigeons syndicalistes en grève, et une invention totale de panne collective des horloges municipales.\n\nUn {{fine mouche|redoutable rusé}} du jury exigea une preuve écrite. L'élève produisit alors un faux {{codicille}} testamentaire censé justifier son retard par un héritage compliqué. Le jury, composé d'anciens champions toutes catégories, resta un moment pantois devant tant d'audace narrative, avant d'accorder à l'unanimité la mention « excellence en fabulation appliquée ». L'élève reçut son diplôme sous une pluie d'applaudissements admiratifs.\n\nL'académie organisait chaque année un concours ouvert au public, où même les employeurs les plus stricts venaient s'inspirer, moins pour excuser leurs propres employés que pour apprendre à détecter les mensonges les plus créatifs de leur personnel.\n\nOn raconte que la ville entière est aujourd'hui en retard permanent à tous ses rendez-vous, mais que personne ne s'en formalise vraiment, tant les excuses fournies sont devenues, avec le temps, un véritable spectacle local à part entière.",
+    "mots": [
+      "torve",
+      "fine mouche",
+      "codicille"
+    ]
+  },
+  {
+    "titre": "Le chat philosophe et le chien anxieux",
+    "type": "loufoque",
+    "texte": "Dans une maison ordinaire vivaient un chat d'une assurance déconcertante face à l'existence, souffrant pourtant en secret d'une {{musophobie}} qu'il cachait soigneusement à tout le monde et un chien perpétuellement craintif, terrorisé par le moindre bruit de sonnette. Leur cohabitation donnait lieu à des échanges philosophiques improbables, chaque soir, sur le rebord de la fenêtre.\n\nLe chat, austère dans ses positions, expliquait régulièrement au chien que l'anxiété n'était qu'une construction mentale sans fondement réel, théorie qu'il développait avec un aplomb presque {{pusillanime|paradoxal pour quelqu'un qui fuyait pourtant systématiquement l'aspirateur}}.\n\nUn {{cyprin}} solitaire, dans son bocal posé sur l'étagère, observait toute la scène sans jamais intervenir. Le chien, impressionné par tant d'assurance féline, tentait sincèrement d'appliquer ces conseils, sans grand succès face au facteur, ennemi juré numéro un de son existence entière. Chaque passage du facteur déclenchait une cavalcade frénétique à travers toute la maison.\n\nUn jour, un orage particulièrement violent éclata, révélant au grand jour la véritable nature du chat : celui-ci se réfugia sous le canapé avec une célérité record, abandonnant sur-le-champ toute sa philosophie de l'instant présent. Le chien, stupéfait de voir son mentor spirituel aussi terrifié que lui par un simple coup de tonnerre, ne sut plus vraiment quoi penser de leurs séances de sagesse nocturne.\n\nLe chat, une fois l'orage passé, reprit ses esprits avec un aplomb inébranlable, prétendant qu'il s'agissait simplement d'un exercice de méditation profonde sous mobilier, technique ancestrale féline peu connue du grand public canin.\n\nLe chien, sceptique mais toujours aussi candide, choisit finalement de le croire, préférant garder intact le mythe de son ami plutôt que d'admettre que même les plus grands sages avaient, eux aussi, leurs petites lâchetés bien humaines — ou plutôt, bien féline.",
+    "mots": [
+      "musophobie",
+      "pusillanime",
+      "cyprin"
+    ]
+  },
+  {
+    "titre": "Le syndicat des monstres sous le lit",
+    "type": "loufoque",
+    "texte": "Depuis des générations, les monstres sous les lits d'enfants s'organisaient en un syndicat professionnel discret, chargé de défendre leurs conditions de travail nocturnes, souvent difficiles et mal reconnues par la société humaine.\n\nLe président du syndicat, un vieux monstre {{entripaillé}} après des siècles de banquets nocturnes, présidait chaque année une assemblée générale houleuse où l'on débattait de sujets sérieux : horaires de terreur, primes de risque pour les enfants particulièrement courageux, une pause {{prandial|repas}} obligatoire à minuit, et diverses revendications concernant la qualité des lits modernes, jugés trop bas pour un travail d'épouvante confortable.\n\nUn jeune monstre débutant, encore maladroit dans l'art du grincement nocturne, se plaignit ouvertement du manque de formation continue offerte aux nouvelles recrues. Le syndicat, circonspect sur la question budgétaire, promit d'étudier la possibilité d'ateliers pratiques, sans grande conviction.\n\nUn monstre au profil {{vulturin}}, longtemps moqué pour son allure décharnée, proposa une motion controversée : fallait-il moderniser les techniques de terreur, jugées par certains dépassées face aux enfants d'aujourd'hui, biberonnés aux jeux vidéo d'horreur bien plus sophistiqués que n'importe quel monstre traditionnel ?\n\nAprès des heures de débat tendu, l'assemblée vota finalement en faveur d'une réforme progressive, incluant notamment l'introduction d'effets sonores plus contemporains et l'abandon définitif du sempiternel grincement de porte, jugé désormais {{léthifère|dangereusement inefficace}} pour l'image de la profession.\n\nLe syndicat se sépara sur cette note résolument moderne, chaque monstre regagnant son lit d'enfant assigné avec, pour la première fois depuis des décennies, un vrai plan de carrière structuré — même si personne, du côté des enfants, ne s'était jamais douté de l'existence d'une telle organisation.",
+    "mots": [
+      "entripaillé",
+      "prandial",
+      "vulturin",
+      "léthifère"
+    ]
   }
 ]
