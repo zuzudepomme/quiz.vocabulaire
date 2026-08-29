@@ -25,11 +25,18 @@
     padding: 40px 16px;
     margin: 0;
   }
-  .app { width: 100%; max-width: 640px; }
+  .app { width: 100%; max-width: 640px; position: relative; }
   h1 { color: var(--orange); text-align: center; margin-bottom: 4px; }
   .subtitle { text-align: center; color: var(--muted); margin-bottom: 32px; }
-  .panel { background: var(--panel); border-radius: 12px; padding: 28px; border-left: 4px solid var(--orange); }
+  .panel { background: var(--panel); border-radius: 12px; padding: 28px; border-left: 4px solid var(--orange); position: relative; }
   .hidden { display: none !important; }
+
+  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .btn-menu {
+    background: #3a3a3a; color: var(--text); border-radius: 8px;
+    padding: 8px 14px; font-size: 14px;
+  }
+  .btn-menu:hover { background: #474747; }
 
   .size-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
   button {
@@ -46,8 +53,11 @@
   .btn-primary:hover { background: var(--orange-light); }
   .btn-primary:disabled { opacity: 0.5; cursor: default; }
 
+  .btn-secondary { background: #3a3a3a; color: var(--text); width: 100%; margin-top: 10px; }
+  .btn-secondary:hover { background: #474747; }
+
   .custom-row { display: flex; gap: 10px; margin-top: 8px; }
-  .custom-row input {
+  .custom-row input, .pseudo-row input {
     flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444;
     background: #1e1e1e; color: var(--text); font-size: 15px;
   }
@@ -76,6 +86,20 @@
   .score-sub { text-align: center; color: var(--muted); margin-bottom: 24px; }
 
   .status { text-align: center; color: var(--muted); }
+
+  .lb-tabs { display: flex; gap: 10px; margin-bottom: 16px; }
+  .lb-tabs button { flex: 1; }
+  .lb-list { list-style: none; padding: 0; margin: 0; }
+  .lb-list li {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #333; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px;
+  }
+  .lb-rank { color: var(--orange-light); font-weight: 700; width: 28px; }
+  .lb-pseudo { flex: 1; }
+  .lb-pct { font-weight: 700; }
+  .lb-empty { color: var(--muted); text-align: center; padding: 20px 0; }
+
+  .pseudo-row { display: flex; gap: 10px; margin: 16px 0; }
 </style>
 </head>
 <body>
@@ -86,6 +110,15 @@
   <!-- CHARGEMENT -->
   <div id="loading-screen" class="panel">
     <p class="status" id="loading-status">Chargement des mots...</p>
+  </div>
+
+  <!-- PSEUDO (première visite) -->
+  <div id="pseudo-screen" class="panel hidden">
+    <p>Choisis un pseudo pour le leaderboard :</p>
+    <div class="pseudo-row">
+      <input id="pseudo-input" type="text" maxlength="20" placeholder="Ton pseudo">
+    </div>
+    <button id="pseudo-btn" class="btn-primary">Valider</button>
   </div>
 
   <!-- MENU -->
@@ -101,10 +134,29 @@
       <input id="custom-input" type="number" min="1" placeholder="Nombre de mots">
     </div>
     <button id="start-btn" class="btn-primary">Commencer</button>
+    <button id="leaderboard-btn" class="btn-secondary">🏆 Leaderboard</button>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div id="leaderboard-screen" class="panel hidden">
+    <div class="top-bar">
+      <button class="btn-menu" id="lb-back-btn">← Menu</button>
+      <span></span>
+    </div>
+    <div class="lb-tabs">
+      <button class="btn-choice lb-tab" data-lb-size="25">25 mots</button>
+      <button class="btn-choice lb-tab" data-lb-size="50">50 mots</button>
+      <button class="btn-choice lb-tab" data-lb-size="100">100 mots</button>
+    </div>
+    <ul class="lb-list" id="lb-list"></ul>
   </div>
 
   <!-- QUIZ -->
   <div id="quiz-screen" class="panel hidden">
+    <div class="top-bar">
+      <button class="btn-menu" id="quiz-menu-btn">☰ Menu</button>
+      <span></span>
+    </div>
     <div class="progress" id="progress"></div>
     <div class="word" id="word"></div>
     <div id="options"></div>
@@ -124,21 +176,119 @@
 <script>
 let MOTS = [];
 
+const PSEUDO_KEY = 'quiz_mots_rares_pseudo';
+const LEADERBOARD_KEY = 'quiz_mots_rares_leaderboard';
+
 const loadingScreen = document.getElementById('loading-screen');
+const pseudoScreen = document.getElementById('pseudo-screen');
 const menuScreen = document.getElementById('menu-screen');
+const leaderboardScreen = document.getElementById('leaderboard-screen');
 const quizScreen = document.getElementById('quiz-screen');
 const scoreScreen = document.getElementById('score-screen');
 
-const sizeButtons = document.querySelectorAll('.btn-choice');
+const sizeButtons = document.querySelectorAll('.btn-choice[data-size]');
 const customRow = document.getElementById('custom-row');
 const customInput = document.getElementById('custom-input');
 const startBtn = document.getElementById('start-btn');
 
 let selectedSize = 25;
+let currentSessionSize = null;
 let questions = [];
 let currentIndex = 0;
 let score = 0;
 let answered = false;
+
+function showOnly(screen) {
+  [loadingScreen, pseudoScreen, menuScreen, leaderboardScreen, quizScreen, scoreScreen]
+    .forEach(s => s.classList.add('hidden'));
+  screen.classList.remove('hidden');
+}
+
+// ------------------ Pseudo ------------------
+
+function getPseudo() {
+  return localStorage.getItem(PSEUDO_KEY);
+}
+
+document.getElementById('pseudo-btn').addEventListener('click', () => {
+  const val = document.getElementById('pseudo-input').value.trim();
+  if (!val) {
+    document.getElementById('pseudo-input').focus();
+    return;
+  }
+  localStorage.setItem(PSEUDO_KEY, val);
+  showOnly(menuScreen);
+});
+
+document.getElementById('pseudo-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('pseudo-btn').click();
+});
+
+// ------------------ Leaderboard ------------------
+
+function getLeaderboard() {
+  try {
+    return JSON.parse(localStorage.getItem(LEADERBOARD_KEY)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveResult(size, scoreVal, total) {
+  const board = getLeaderboard();
+  board.push({
+    pseudo: getPseudo() || 'Anonyme',
+    size: size,
+    score: scoreVal,
+    total: total,
+    pct: Math.round((scoreVal / total) * 100),
+    date: new Date().toISOString(),
+  });
+  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board));
+}
+
+function renderLeaderboard(size) {
+  document.querySelectorAll('.lb-tab').forEach(b => {
+    b.classList.toggle('selected', parseInt(b.dataset.lbSize, 10) === size);
+  });
+  const list = document.getElementById('lb-list');
+  const entries = getLeaderboard()
+    .filter(e => e.size === size)
+    .sort((a, b) => b.pct - a.pct || new Date(a.date) - new Date(b.date))
+    .slice(0, 20);
+
+  if (entries.length === 0) {
+    list.innerHTML = '<li class="lb-empty">Aucun score enregistré pour cette catégorie pour l\\'instant.</li>';
+    return;
+  }
+
+  list.innerHTML = entries.map((e, i) => `
+    <li>
+      <span class="lb-rank">${i + 1}.</span>
+      <span class="lb-pseudo">${escapeHtml(e.pseudo)}</span>
+      <span class="lb-pct">${e.pct}% (${e.score}/${e.total})</span>
+    </li>
+  `).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+document.querySelectorAll('.lb-tab').forEach(btn => {
+  btn.addEventListener('click', () => renderLeaderboard(parseInt(btn.dataset.lbSize, 10)));
+});
+
+document.getElementById('leaderboard-btn').addEventListener('click', () => {
+  showOnly(leaderboardScreen);
+  renderLeaderboard(25);
+});
+
+document.getElementById('lb-back-btn').addEventListener('click', () => showOnly(menuScreen));
+
+// ------------------ Chargement des mots ------------------
 
 fetch('mots.json')
   .then(r => {
@@ -148,8 +298,11 @@ fetch('mots.json')
   .then(data => {
     MOTS = data;
     if (!MOTS.length) throw new Error('Fichier mots.json vide');
-    loadingScreen.classList.add('hidden');
-    menuScreen.classList.remove('hidden');
+    if (getPseudo()) {
+      showOnly(menuScreen);
+    } else {
+      showOnly(pseudoScreen);
+    }
     sizeButtons[0].classList.add('selected');
   })
   .catch(err => {
@@ -157,6 +310,8 @@ fetch('mots.json')
       "Impossible de charger mots.json (" + err.message + "). " +
       "Génère-le avec build_data.py puis recharge la page.";
   });
+
+// ------------------ Menu / sélection taille ------------------
 
 function shuffle(arr) {
   const a = arr.slice();
@@ -191,6 +346,21 @@ startBtn.addEventListener('click', () => {
   startQuiz(size);
 });
 
+document.getElementById('quiz-menu-btn').addEventListener('click', () => {
+  showOnly(menuScreen);
+});
+
+document.getElementById('menu-btn').addEventListener('click', () => {
+  showOnly(menuScreen);
+  sizeButtons.forEach(b => b.classList.remove('selected'));
+  customRow.classList.add('hidden');
+  customInput.value = '';
+  selectedSize = 25;
+  sizeButtons[0].classList.add('selected');
+});
+
+// ------------------ Quiz ------------------
+
 function buildQuestions(size) {
   const chosen = shuffle(MOTS).slice(0, size);
   return chosen.map(entry => {
@@ -204,11 +374,10 @@ function buildQuestions(size) {
 
 function startQuiz(size) {
   questions = buildQuestions(size);
+  currentSessionSize = size;
   currentIndex = 0;
   score = 0;
-  menuScreen.classList.add('hidden');
-  scoreScreen.classList.add('hidden');
-  quizScreen.classList.remove('hidden');
+  showOnly(quizScreen);
   showQuestion();
 }
 
@@ -307,22 +476,14 @@ document.addEventListener('keydown', (e) => {
 });
 
 function showScore() {
-  quizScreen.classList.add('hidden');
-  scoreScreen.classList.remove('hidden');
+  if ([25, 50, 100].includes(currentSessionSize)) {
+    saveResult(currentSessionSize, score, questions.length);
+  }
+  showOnly(scoreScreen);
   const pct = Math.round((score / questions.length) * 100);
   document.getElementById('score-big').textContent = `${score}/${questions.length}`;
   document.getElementById('score-sub').textContent = `${pct}% de bonnes réponses`;
 }
-
-document.getElementById('menu-btn').addEventListener('click', () => {
-  scoreScreen.classList.add('hidden');
-  menuScreen.classList.remove('hidden');
-  sizeButtons.forEach(b => b.classList.remove('selected'));
-  customRow.classList.add('hidden');
-  customInput.value = '';
-  selectedSize = 25;
-  sizeButtons[0].classList.add('selected');
-});
 </script>
 </body>
 </html>
